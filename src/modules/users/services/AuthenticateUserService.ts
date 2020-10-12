@@ -1,14 +1,14 @@
 import { sign } from 'jsonwebtoken';
 import { inject, injectable } from 'tsyringe';
 
-import AppError from '@shared/errors/AppError';
-
 import authConfig from '@config/auth';
 import User from '@modules/users/infra/typeorm/entities/User';
 
 import IAuthenticateUserDTO from '@modules/users/dtos/IAuthenticateUserDTO';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import IHashProvider from '@modules/users/providers/HashProvider/models/IHashprovider';
+
+import { ApolloError } from 'apollo-server-express';
 
 interface IResponse {
   user: User;
@@ -30,15 +30,14 @@ class AuthenticateUserService {
   }: IAuthenticateUserDTO): Promise<IResponse> {
     const user = await this.usersRepository.findByEmail(email);
 
-    if (!user) throw new AppError('Incorrect email or password', 401);
+    if (!user) throw new ApolloError('E-mail não encontrado');
 
     const passwordMatched = await this.hashProvider.compareHash(
       password,
       user.password,
     );
 
-    if (!passwordMatched)
-      throw new AppError('Incorrect email or password', 401);
+    if (!passwordMatched) throw new ApolloError('Senha incorreta');
 
     const {
       jwt: { expiresIn, secret },

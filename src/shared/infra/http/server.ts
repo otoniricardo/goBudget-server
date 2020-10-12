@@ -1,42 +1,45 @@
 import 'reflect-metadata';
 import 'dotenv/config';
 
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
+import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
-import { errors } from 'celebrate';
-import 'express-async-errors';
-
-import uploadConfig from '@config/upload';
-import AppError from '@shared/errors/AppError';
-
-import routes from './routes';
 
 import '@shared/infra/typeorm';
 import '@shared/container';
-import rateLimiter from './middlewares/RateLimiter';
 
-const app = express();
+import schema from '../graphql/schema';
+import { createContext } from '../graphql/context';
 
-app.use(cors());
-app.use(express.json());
-app.use('/files', express.static(uploadConfig.uploadsFolder));
-app.use(rateLimiter);
-app.use(routes);
-app.use(errors());
+const main = async () => {
+  const app = express();
 
-app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
-  if (err instanceof AppError)
-    return response.status(err.statusCode).json({
-      status: 'error',
-      message: err.message,
-    });
+  app.use(cors());
 
-  console.log(err);
+  const apolloServer = new ApolloServer({
+    schema: await schema,
+    context: createContext,
 
-  return response.status(500).json({
-    status: 'error',
-    message: 'Internal Server Error',
+    formatError: err => {
+      return err;
+      //   return {
+      //     ...err,
+      //     message:
+      //       err.originalError instanceof ApolloError
+      //         ? err.message
+      //         : 'Internal Server Error',
+      //     locations: [],
+      //     extensions: [],
+      //   };
+    },
   });
-});
 
-app.listen(3333, () => console.log('Server listenning on port 3333!'));
+  apolloServer.applyMiddleware({
+    app,
+    cors: false,
+  });
+
+  app.listen(3333, () => console.log('Server listenning on port 3333!'));
+};
+
+main().catch(err => console.log(err));

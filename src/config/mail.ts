@@ -1,5 +1,5 @@
 interface IMailConfig {
-  driver: 'ethereal' | 'ses';
+  driver: 'ethereal';
   defaults: {
     from: {
       name: string;
@@ -9,7 +9,7 @@ interface IMailConfig {
 }
 
 export default {
-  driver: process.env.MAIL_DRIVER || 'ethereal',
+  driver: 'ethereal',
   defaults: {
     from: {
       email: 'equipegobarber@agrotudorn.com.br',

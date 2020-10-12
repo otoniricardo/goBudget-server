@@ -9,22 +9,27 @@ import {
 import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
-@Entity('users')
-class User {
+@Entity('suppliers')
+class Supplier {
   @Field()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Field()
   @Column()
-  name: string;
+  supplier_name: string;
 
   @Field()
   @Column()
-  email: string;
+  contact_name: string;
 
+  @Field()
   @Column()
-  password: string;
+  contact_email: string;
+
+  @Field()
+  @Column()
+  contact_phone: string;
 
   @CreateDateColumn()
   created_at: Date;
@@ -33,4 +38,4 @@ class User {
   updated_at: Date;
 }
 
-export default User;
+export default Supplier;

@@ -20,6 +20,7 @@
         "prettier"
     ],
     "rules": {
+      "max-classes-per-file": "off",
       "no-useless-constructor": "off",
       // "@typescript-eslit/interface-name-prefix": ["error", { "prefixWithI": "always"}],
       "camelcase":"off",
