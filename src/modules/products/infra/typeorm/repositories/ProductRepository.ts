@@ -1,4 +1,4 @@
-import { getRepository, Repository } from 'typeorm';
+import { getRepository, In, Repository } from 'typeorm';
 
 import Product from '@modules/products/infra/typeorm/entities/Product';
 
@@ -10,6 +10,19 @@ class ProductRepository implements IProductRepository {
 
   constructor() {
     this.ormRepository = getRepository(Product);
+  }
+
+  public async findByCodes(codes: number[]): Promise<Product[]> {
+    return this.ormRepository.find({ where: { code: In(codes) } });
+  }
+
+  public async findBySupplierId(supplier_id: string): Promise<Product[]> {
+    return this.ormRepository.find({
+      where: { supplier_id },
+      order: {
+        name: 'ASC',
+      },
+    });
   }
 
   public async findAll(): Promise<Product[]> {
@@ -37,6 +50,22 @@ class ProductRepository implements IProductRepository {
     });
 
     return latestRecord;
+  }
+
+  public async addProductsToSupplier(
+    supplier_id: string,
+    products_codes: number[],
+  ): Promise<void> {
+    const products = await this.ormRepository.find({
+      where: { code: In(products_codes) },
+    });
+
+    const updatedProducts = products.map(product => ({
+      ...product,
+      supplier_id,
+    }));
+
+    await this.ormRepository.save(updatedProducts);
   }
 }
 export default ProductRepository;

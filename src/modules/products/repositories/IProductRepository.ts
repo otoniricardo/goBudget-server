@@ -6,4 +6,10 @@ export default interface IUsersRepository {
   findLatest(): Promise<Product | undefined>;
   bulkCreate(products: ICreateProducts[]): Promise<Product[]>;
   bulkSave(products: ICreateProducts[]): Promise<Product[]>;
+  addProductsToSupplier(
+    supplier_id: string,
+    products_codes: number[],
+  ): Promise<void>;
+  findBySupplierId(supplier_id: string): Promise<Product[]>;
+  findByCodes(codes: number[]): Promise<Product[]>;
 }

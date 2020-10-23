@@ -9,9 +9,13 @@ import {
 } from 'type-graphql';
 import { container } from 'tsyringe';
 
+import { GraphQLUpload } from 'apollo-server-express';
+import { FileUpload } from 'graphql-upload';
+
 import CreateSupplierService from '@modules/suppliers/services/CreateSupplierService';
 import GetAllSupliersService from '@modules/suppliers/services/GetAllSuppliersService';
 import GetSupplierByIdService from '@modules/suppliers/services/GetSupplierByIdService';
+import AddProductstoSupplierService from '@modules/suppliers/services/AddProductsToSupplierService';
 
 import Supplier from '@modules/suppliers/infra/typeorm/entities/Supplier';
 
@@ -55,6 +59,19 @@ export default class SupplierResolver {
     });
 
     return { error, supplier };
+  }
+
+  @Mutation(() => String)
+  @UseMiddleware(EnsureAuthentication)
+  async UpdateSupplierProducts(
+    @Arg('file', () => GraphQLUpload || Boolean) file: FileUpload,
+    @Arg('supplier_id') supplier_id: string,
+  ): Promise<string> {
+    const addProducts = container.resolve(AddProductstoSupplierService);
+
+    await addProducts.execute({ file, supplier_id });
+
+    return 'Arquivo processado com sucesso';
   }
 
   @Query(() => [Supplier])

@@ -5,11 +5,11 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateProducts1602539054719 implements MigrationInterface {
+export default class CreateSales1603124681368 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'products',
+        name: 'sales',
         columns: [
           {
             name: 'id',
@@ -19,34 +19,18 @@ export default class CreateProducts1602539054719 implements MigrationInterface {
             default: 'uuid_generate_v4()',
           },
           {
-            name: 'supplier_id',
-            type: 'uuid',
-            isNullable: true,
-          },
-          {
-            name: 'code',
+            name: 'product_code',
             type: 'integer',
             isNullable: false,
-            isUnique: true,
           },
           {
-            name: 'reference',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'name',
-            type: 'varchar',
-            isNullable: false,
-          },
-          {
-            name: 'price',
-            type: 'decimal(8,2)',
-            isNullable: false,
-          },
-          {
-            name: 'stock',
+            name: 'quantity',
             type: 'integer',
+            isNullable: false,
+          },
+          {
+            name: 'sold_in',
+            type: 'date',
             isNullable: false,
           },
           {
@@ -64,13 +48,13 @@ export default class CreateProducts1602539054719 implements MigrationInterface {
     );
 
     await queryRunner.createForeignKey(
-      'products',
+      'sales',
       new TableForeignKey({
-        name: 'product_supplier',
-        columnNames: ['supplier_id'],
-        referencedColumnNames: ['id'],
-        referencedTableName: 'suppliers',
-        onDelete: 'SET NULL',
+        name: 'sale-product',
+        columnNames: ['product_code'],
+        referencedColumnNames: ['code'],
+        referencedTableName: 'products',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       }),
     );

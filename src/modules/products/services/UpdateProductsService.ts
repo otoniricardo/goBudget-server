@@ -58,7 +58,7 @@ class UpdateProductsService {
         const price = Number(
           product.valor.replace(/[^\d,-]/g, '').replace(',', '.'),
         );
-        const stock = Number(product.estoque.split(',')[0]);
+        const stock = Number(product.estoque.replace('.', '').split(',')[0]);
         return {
           code: Number(product.codigo),
           name: product.nome,

@@ -11,6 +11,9 @@ import UpdateProductsService from '@modules/products/services/UpdateProductsServ
 import GetLatestUpdateService from '@modules/products/services/GetLastUpdateService';
 import { format } from 'date-fns';
 
+import GetProductsBySupplierIdService from '@modules/products/services/GetProductsBySupplierIdService';
+import Product from '../../typeorm/entities/Product';
+
 @Resolver()
 export default class ProductResolver {
   @Mutation(() => String)
@@ -36,5 +39,15 @@ export default class ProductResolver {
     if (!lastUpdate) return 'Nenhuma atualização foi realizada';
 
     return format(lastUpdate, "dd/MM/yyyy 'às' HH:mm 'h'");
+  }
+
+  @Query(() => [Product])
+  @UseMiddleware(EnsureAuthentication)
+  async getProductsBySupplierId(
+    @Arg('supplier_id') supplier_id: string,
+  ): Promise<Product[]> {
+    const getBySupplierId = container.resolve(GetProductsBySupplierIdService);
+
+    return getBySupplierId.execute(supplier_id);
   }
 }

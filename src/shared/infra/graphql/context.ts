@@ -32,6 +32,6 @@ export function createContext(context: ExpressContext): MyContext {
 
     return { user_id: sub };
   } catch {
-    throw new AuthenticationError('Token de autenticação inválido');
+    throw new AuthenticationError('Unauthorized');
   }
 }
